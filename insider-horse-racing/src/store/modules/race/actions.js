@@ -1,4 +1,3 @@
-
 const HORSE_NAMES = [
   "Ada Lovelace",
   "Grace Hopper",
@@ -47,7 +46,6 @@ const HORSE_COLORS = [
 
 const ROUND_DISTANCES = [1200, 1400, 1600, 1800, 2000, 2200];
 
-
 function randomInt(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
@@ -64,7 +62,6 @@ function shuffle(arr) {
   }
   return copy;
 }
-
 
 function buildHorses() {
   const names = shuffle(HORSE_NAMES);
@@ -106,7 +103,6 @@ function buildPositions(roundHorses) {
 function sortByFinishOrder(positions) {
   return [...positions].sort((a, b) => b.x - a.x);
 }
-
 
 export default {
   generateProgram({ commit }) {
@@ -169,25 +165,26 @@ export default {
     if (state.status !== "running") return;
 
     const FINISH_X = 100;
-
     const tickMs = typeof state.tickMs === "number" ? state.tickMs : 90;
 
-    const next = (state.positions || []).map((p) => {
-      if (p.finished) return p;
+    const next = (state.positions || []).map((position) => {
+      if (position.finished) return position;
 
       const wobble = randomFloat(-0.15, 0.15);
-      const x = Math.max(0, p.x + p.speed + wobble);
 
-      if (x >= FINISH_X) {
-        return { ...p, x: FINISH_X, finished: true };
+      const nextX = Math.max(0, position.x + position.speed + wobble);
+
+      if (nextX >= FINISH_X) {
+        return { ...position, x: FINISH_X, finished: true };
       }
 
-      return { ...p, x };
+      return { ...position, x: nextX };
     });
 
     commit("SET_POSITIONS", next);
 
-    const allFinished = next.length > 0 && next.every((p) => p.finished);
+    const allFinished =
+      next.length > 0 && next.every((position) => position.finished);
 
     if (allFinished) {
       dispatch("finishRound");
